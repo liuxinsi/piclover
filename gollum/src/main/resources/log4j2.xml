@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="error">
+    <properties>
+        <property name="logDir">../logs/</property>
+        <property name="fn">gollum.log</property>
+    </properties>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%p] %d [%t] [%c] - %m%n"/>
+        </Console>
+
+        <RollingRandomAccessFile name="ff" fileName="${logDir}${fn}"
+                                 filePattern="${logDir}/bk/$${date:yyyy-MM}/${fn}-%d{MM-dd-yyyy}-%i.log.gz">
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="1 GB"/>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+            <DefaultRolloverStrategy max="31"/>
+            <PatternLayout pattern="[%p] %d [%t] [%c{1.}] - %m%n"/>
+        </RollingRandomAccessFile>
+
+        <Async name="Async" bufferSize="1000" includeLocation="true">
+            <!--<AppenderRef ref="Console"/>-->
+            <AppenderRef ref="ff"/>
+        </Async>
+    </Appenders>
+
+    <Loggers>
+        <logger name="org.springframework" level="info" additivity="false"/>
+        <logger name="reactor.ipc.netty.http.server" level="info" additivity="false"/>
+        <logger name="reactor.ipc.netty.channel" level="info" additivity="false"/>
+        <logger name="org.apache.kafka.clients.consumer.internals.Fetcher" level="info" additivity="false"/>
+        <root level="debug">
+            <appender-ref ref="Async"/>
+        </root>
+    </Loggers>
+</Configuration>
