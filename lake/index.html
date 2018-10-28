@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="不用翻墙下载Instagram,Flickr,500px上的图片">
+    <meta name="author" content="liuxinsi">
+
+    <title>爱图客 - Instagram/Flickr/500px 美图下载</title>
+
+    <link rel="stylesheet" href="css/m/style.css">
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom fonts for this template -->
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="vendor/simple-line-icons/css/simple-line-icons.css" rel="stylesheet" type="text/css">
+    <link href="css/font.css" rel="stylesheet" type="text/css">
+
+    <!-- Custom styles for this template -->
+    <link href="css/landing-page.min.css" rel="stylesheet">
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <style type="text/css">
+        fieldset {
+            border: 0;
+            padding: 40px;
+            margin-bottom: 10px;
+
+            border-radius: 8px;
+            -moz-border-radius: 8px;
+            -webkit-border-radius: 8px;
+
+            box-shadow: 3px 3px 10px #666;
+            -moz-box-shadow: 3px 3px 10px #666;
+            -webkit-box-shadow: 3px 3px 10px #666;
+
+            position: relative;
+        }
+
+        legend {
+            padding: 5px 10px;
+            background-color: #4F709F;
+            color: #FFF;
+
+            border-radius: 3px;
+            -moz-border-radius: 3px;
+            -webkit-border-radius: 3px;
+
+            box-shadow: 2px 2px 4px #666;
+            -moz-box-shadow: 2px 2px 4px #666;
+            -webkit-box-shadow: 2px 2px 4px #666;
+
+            position: absolute;
+            left: 10px;
+            top: -11px;
+        }
+
+        .slide_img {
+            width: 50%;
+            height: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+    </style>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#showPic_fs").hide();
+
+            $("#getBtn").click(function () {
+                var pat = /^http(s)?:\/\/www\.instagram\.com.*/;
+                var url = $("#url_input").val();
+                var arr = [];
+
+                if (pat.test(url)) {
+                    arr.push(url);
+
+                    $("#getBtn").attr("disabled", "disabled");
+
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        contentType: "application/json",
+                        url: "/api/gollum/v1/submitUrls",
+                        data: JSON.stringify(arr),
+                        success: function (data) {
+                            if (data.status === 'ERROR') {
+                                alert(data.mesg);
+                            } else {
+                                getPic(data.data.id);
+                                $("#url_input").val('');
+                            }
+                        },
+                        error: function (err) {
+                            alert('服务暂时不可用');
+                        }
+                    });
+
+                } else {
+                    alert('暂不支持的站点');
+                }
+            });
+
+            function getPic(id) {
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "/api/precious/v1/getPrecious?id=" + id,
+                    success: function (data) {
+                        if (data.status === 'ERROR') {
+                            alert(data.mesg);
+                        } else {
+                            $("#showPic_fs").show();
+
+                            for (i = 0; i < data.data.length; i++) {
+                                $("#title_div").text(data.data[i].title);
+                                $("#desc_div").text(data.data[i].description);
+                                $("#img_div").attr("src", "data:image/jpg;base64," + data.data[i].image);
+
+                                $("#getBtn").removeAttr("disabled");
+                            }
+
+                        }
+                    },
+                    error: function (err) {
+                        alert('服务暂时不可用');
+                    }
+                });
+            }
+        });
+    </script>
+</head>
+
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-light bg-light static-top">
+    <div class="container">
+        <a class="navbar-brand" href="#">爱图客 - Beta</a>
+    </div>
+    <div class="container">
+        <a class="btn btn-primary" href="javascript:alert('暂不开放');">私人收藏</a>
+        <a class="btn btn-info" href="message_board.html">留言板</a>
+    </div>
+</nav>
+
+<!-- Masthead -->
+<header class="masthead text-white text-center">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-9 mx-auto">
+                <h1 class="mb-5">快将你喜爱的图片与视频永久保存吧!</h1>
+            </div>
+            <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
+                <form>
+                    <div class="form-row">
+                        <div class="col-12 col-md-9 mb-2 mb-md-0">
+                            <input type="email" class="form-control form-control-lg"
+                                   placeholder="Enter Instagram URL or Username" id="url_input">
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <button type="button" class="btn btn-block btn-lg btn-primary" id="getBtn">GET</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</header>
+
+<br/>
+
+<!-- Icons Grid -->
+<!--<section class="features-icons bg-light text-center">-->
+<!--<div class="container">-->
+<!--<div class="row">-->
+<!--<div class="col-lg-4">-->
+<!--<div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">-->
+<!--<div class="features-icons-icon d-flex">-->
+<!--<i class="icon-screen-desktop m-auto text-primary"></i>-->
+<!--</div>-->
+<!--<h3>Fully Responsive</h3>-->
+<!--<p class="lead mb-0">This theme will look great on any device, no matter the size!</p>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="col-lg-4">-->
+<!--<div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">-->
+<!--<div class="features-icons-icon d-flex">-->
+<!--<i class="icon-layers m-auto text-primary"></i>-->
+<!--</div>-->
+<!--<h3>Bootstrap 4 Ready</h3>-->
+<!--<p class="lead mb-0">Featuring the latest build of the new Bootstrap 4 framework!</p>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="col-lg-4">-->
+<!--<div class="features-icons-item mx-auto mb-0 mb-lg-3">-->
+<!--<div class="features-icons-icon d-flex">-->
+<!--<i class="icon-check m-auto text-primary"></i>-->
+<!--</div>-->
+<!--<h3>Easy to Use</h3>-->
+<!--<p class="lead mb-0">Ready to use with your own content, or customize the source files!</p>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</section>-->
+
+<fieldset id="showPic_fs">
+    <legend>您的内容 - 在右侧图片上右键:选择图片存储为</legend>
+    <section class="showcase">
+        <div class="container-fluid p-0">
+            <div class="row no-gutters">
+
+                <div class="col-lg-6 order-lg-2 text-white showcase-img">
+                    <img id="img_div"/>
+                </div>
+                <div class="col-lg-6 order-lg-1 my-auto showcase-text">
+                    <h2>
+                        <div id="title_div"></div>
+                    </h2>
+                    <p class="lead mb-0">
+                    <div id="desc_div"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</fieldset>
+<br/>
+
+
+<fieldset>
+    <legend>编辑精选</legend>
+
+    <!-- Image Showcases -->
+    <section class="showcase">
+        <div class="container-fluid p-0">
+            <div class="row no-gutters">
+                <div class="col-lg-6 order-lg-2 text-white showcase-img">
+                    <a href="sep.html">
+                        <img src="img/sep/2.jpg" alt="Hiphop风格墙纸,Hiphop风格手机墙纸.">
+                    </a>
+                </div>
+                <div class="col-lg-6 order-lg-1 my-auto showcase-text">
+                    <h2>九月精选 - HipHop风格(一)</h2>
+                    <p class="lead mb-0">
+                        J Cole、kendrick lamar、SchoolboyQ等 HipHop风格的墙纸，点击图片查看更多。
+                    </p>
+                </div>
+            </div>
+            <div class="row no-gutters">
+                <div class="col-lg-6 text-white showcase-img">
+                    <a href="aug.html">
+                        <img src="img/aug/1.jpg" style="height: 80%" alt="Ins风格墙纸,Ins风格手机墙纸">
+                    </a>
+                </div>
+                <div class="col-lg-6 my-auto showcase-text">
+                    <h2>八月精选 - Ins风格</h2>
+                    <p class="lead mb-0">精选Ins风手机墙纸，点击图片查看更多。</p>
+                </div>
+            </div>
+            <div class="row no-gutters">
+                <div class="col-lg-6 order-lg-2 text-white showcase-img">
+                    <a href="july.html"> <img src="img/july/2.jpeg" style="height: 60%" alt="忧郁系风格墙纸,忧郁系风格手机墙纸"></a>
+
+                </div>
+                <div class="col-lg-6 order-lg-1 my-auto showcase-text">
+                    <h2>七月精选 - 忧郁系</h2>
+                    <p class="lead mb-0">忧郁森林系手机墙纸，点击图片查看更多</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</fieldset>
+
+<!-- Testimonials -->
+<!--<section class="testimonials text-center bg-light">-->
+<!--<div class="container">-->
+<!--<h2 class="mb-5">What people are saying...</h2>-->
+<!--<div class="row">-->
+<!--<div class="col-lg-4">-->
+<!--<div class="testimonial-item mx-auto mb-5 mb-lg-0">-->
+<!--<img class="img-fluid rounded-circle mb-3" src="img/testimonials-1.jpg" alt="">-->
+<!--<h5>Margaret E.</h5>-->
+<!--<p class="font-weight-light mb-0">"This is fantastic! Thanks so much guys!"</p>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="col-lg-4">-->
+<!--<div class="testimonial-item mx-auto mb-5 mb-lg-0">-->
+<!--<img class="img-fluid rounded-circle mb-3" src="img/testimonials-2.jpg" alt="">-->
+<!--<h5>Fred S.</h5>-->
+<!--<p class="font-weight-light mb-0">"Bootstrap is amazing. I've been using it to create lots of super nice landing pages."</p>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="col-lg-4">-->
+<!--<div class="testimonial-item mx-auto mb-5 mb-lg-0">-->
+<!--<img class="img-fluid rounded-circle mb-3" src="img/testimonials-3.jpg" alt="">-->
+<!--<h5>Sarah	W.</h5>-->
+<!--<p class="font-weight-light mb-0">"Thanks so much for making these free resources available to us!"</p>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</section>-->
+
+<!-- Call to Action -->
+<!--<section class="call-to-action text-white text-center">-->
+<!--<div class="overlay"></div>-->
+<!--<div class="container">-->
+<!--<div class="row">-->
+<!--<div class="col-xl-9 mx-auto">-->
+<!--<h2 class="mb-4">Ready to get started? Sign up now!</h2>-->
+<!--</div>-->
+<!--<div class="col-md-10 col-lg-8 col-xl-7 mx-auto">-->
+<!--<form>-->
+<!--<div class="form-row">-->
+<!--<div class="col-12 col-md-9 mb-2 mb-md-0">-->
+<!--<input type="email" class="form-control form-control-lg" placeholder="Enter your email...">-->
+<!--</div>-->
+<!--<div class="col-12 col-md-3">-->
+<!--<button type="submit" class="btn btn-block btn-lg btn-primary">Sign up!</button>-->
+<!--</div>-->
+<!--</div>-->
+<!--</form>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</section>-->
+
+<!-- Footer -->
+<footer class="footer bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 h-100 text-center text-lg-left my-auto">
+                <ul class="list-inline mb-2">
+                    <li class="list-inline-item">
+                        <a href="#" data-toggle="modal" data-target="#aboutModal">关于</a>
+                    </li>
+                    <li class="list-inline-item">&sdot;</li>
+                    <li class="list-inline-item">
+                        <a href="#" data-toggle="modal" data-target="#contactModal">联系方式</a>
+                    </li>
+                    <li class="list-inline-item">&sdot;</li>
+                    <li class="list-inline-item">
+                        <a href="#" data-toggle="modal" data-target="#disclaimerModal">免责声明</a>
+                    </li>
+                    <li class="list-inline-item">&sdot;</li>
+                    <li class="list-inline-item">
+                        <a href="#" data-toggle="modal" data-target="#ppModal">隐私政策</a>
+                    </li>
+                </ul>
+                <p class="text-muted small mb-4 mb-lg-0">&copy; PicLover 2018. All Rights Reserved.</p>
+            </div>
+            <!--<div class="col-lg-6 h-100 text-center text-lg-right my-auto">-->
+            <!--<ul class="list-inline mb-0">-->
+            <!--<li class="list-inline-item mr-3">-->
+            <!--<a href="#">-->
+            <!--<i class="fa fa-facebook fa-2x fa-fw"></i>-->
+            <!--</a>-->
+            <!--</li>-->
+            <!--<li class="list-inline-item mr-3">-->
+            <!--<a href="#">-->
+            <!--<i class="fa fa-twitter fa-2x fa-fw"></i>-->
+            <!--</a>-->
+            <!--</li>-->
+            <!--<li class="list-inline-item">-->
+            <!--<a href="#">-->
+            <!--<i class="fa fa-instagram fa-2x fa-fw"></i>-->
+            <!--</a>-->
+            <!--</li>-->
+            <!--</ul>-->
+            <!--</div>-->
+
+            <!-- about -->
+            <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                <!--&times;-->
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                关于
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            站长私人小水管境外Vps.<br/><br/>
+                            所以可能经常无响应或者挂掉，换个时间再来吧.<br/><br/>
+                            有建议可以留言给我，我考虑是否升级Vps配置。<br/><br/>
+
+                            关注公众号有美图推送。<br/><br/>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                            </button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+
+            <!--contact-->
+            <div class="modal fade" id="contactModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                <!--&times;-->
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                联系方式
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            WeChat:237440906<br/><br/>
+                            Email:akalxs@gmail.com<br/><br/>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                            </button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+
+            <!--disclaimer-->
+            <div class="modal fade" id="disclaimerModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                <!--&times;-->
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                免责声明
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            爱图客（piclover.cn）刊载的所有内容，包括文字、图片、音频、视频、软件、程序、以及网页版式设计等均在网上搜集。<br/><br/>
+                            爱图客提供的内容仅用于个人学习、研究或欣赏。我们不保证内容的正确性。通过使用本站内容随之而来的风险与本站无关。<br/><br/>
+                            访问者可将本网站提供的内容或服务用于个人学习、研究或欣赏，以及其他非商业性或非盈利性用途，但同时应遵守著作权法及其他相关法律的规定，不得侵犯本网站及相关权利人的合法权利。<br/><br/>
+                            本网站内容原作者如不愿意在本网站刊登内容,请及时通知本站,予以删除。<br/><br/>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                            </button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+
+            <!--pp-->
+            <div class="modal fade" id="ppModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                <!--&times;-->
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                隐私政策
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            功能性站点，不会收集您的<b>任何</b>信息。<br/><br/>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                            </button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+</body>
+
+</html>

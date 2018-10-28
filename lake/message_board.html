@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>爱图客 - Instagram/Flickr/500px 美图下载</title>
+    <!-- Main css -->
+    <link rel="stylesheet" href="css/m/style.css">
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom fonts for this template -->
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="vendor/simple-line-icons/css/simple-line-icons.css" rel="stylesheet" type="text/css">
+    <link href="css/font.css" rel="stylesheet" type="text/css">
+
+    <!-- Custom styles for this template -->
+    <link href="css/landing-page.min.css" rel="stylesheet">
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#submitComment").click(function () {
+                var comment = $("#comment").val();
+                var name = $("#name").val();
+                var email = $("#email").val();
+                if (comment === '') {
+                    return;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json",
+                    url: "/api/mb/v1/addComment",
+                    data: JSON.stringify({'comment': comment, 'name': name, 'mail': email}),
+                    success: function (data) {
+                        if (data.status === 'ERROR') {
+                            alert(data.mesg);
+                        } else {
+                            alert('多谢支持');
+                            $("#comment").val('');
+                            $("#name").val('');
+                            $("#email").val('');
+                            loadComments();
+                        }
+                    },
+                    error: function (err) {
+                        alert('请正确填写留言,谢谢.');
+                    }
+                });
+
+            });
+
+            function loadComments() {
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "/api/mb/v1/loadComments",
+                    success: function (data) {
+                        if (data.status === 'ERROR') {
+                            alert(data.mesg);
+                        } else {
+                            var coms = [];
+                            coms.push("<h3>" + data.data.length + " Comments</h3>");
+
+                            for (i = 0; i < data.data.length; i++) {
+                                var h = "<div class='media'><div class='media-object pull-left'> <img src='img/tdxDefaultUserLogo.png' class='img-responsive img-circle'  alt='Blog Image'>   </div> <div class='media-body'>  <h3 class='media-heading'>" + data.data[i].name + "</h3> <span>" + data.data[i].date + "</span><p>" + data.data[i].comment + "</p></div></div>";
+                                coms.push(h);
+                            }
+                            $("#comments_div").html(coms);
+
+                        }
+                    },
+                    error: function (err) {
+                        alert('服务暂时不可用');
+                    }
+                });
+            }
+
+            loadComments();
+        });
+    </script>
+</head>
+<body>
+
+<!-- PRE LOADER -->
+
+<div class="preloader">
+    <div class="sk-spinner sk-spinner-wordpress">
+        <span class="sk-inner-circle"></span>
+    </div>
+</div>
+
+<!-- Navigation section  -->
+
+<!-- Navigation -->
+<nav class="navbar navbar-light bg-light static-top">
+    <div class="container">
+        <a class="navbar-brand" href="https://piclover.cn">爱图客 - Beta</a>
+    </div>
+    <div class="container">
+        <a class="btn btn-primary" href="javascript:alert('暂不开放');">私人收藏</a>
+        <a class="btn btn-info" href="message_board.html">留言板</a>
+    </div>
+</nav>
+
+<!-- Blog Single Post Section -->
+
+<section id="blog-single-post">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-offset-1 col-md-10 col-sm-12">
+                <div class="blog-single-post-thumb">
+
+                    <div class="blog-post-title">
+                        <h2>欢迎留言</h2>
+                    </div>
+
+                    <div class="blog-post-format">
+                        <span><a href="#"><img src="img/6959103.jpeg"
+                                               class="img-responsive img-circle">Liuxinsi</a></span>
+                        <span><i class="fa fa-date"></i> Oct 4, 2018</span>
+                        <span><a href="#"><i class="fa fa-comment-o"></i> x Comments</a></span>
+                    </div>
+
+                    <div class="blog-post-des">
+                        <blockquote>
+                            站长是一个南京程序员，经常从这些网站找些图片做为手机墙纸，后来这些网站用了些技术手段不让直接右键保存了，只能写些小脚本爬到真实的地址下载下来。
+                        </blockquote>
+                        <blockquote>
+                            这两年vpn严打，所以自己买了vps搭建vpn，索性将这些脚本改成服务给同样有需求的人用。
+                        </blockquote>
+                        <blockquote>
+                            因服务器本身就是为了vpn用，所以配置很差，可能经常无响应或者挂掉，换个时间再来吧。<br/>
+                            有建议可以留言给我。
+                        </blockquote>
+                        <h3>Todo:</h3>
+                        <ul>
+                            <li>
+                                <p>Instagram(完成)</p>
+                            </li>
+                            <li>
+                                <p>Flickr(测试)</p>
+                            </li>
+                            <li>
+                                <p>500px(测试)</p>
+                            </li>
+                            <li>
+                                <p>pinterest</p>
+                            </li>
+                            <li>
+                                <p>根据用户名爬全部</p>
+                            </li>
+                            <li>
+                                <p>短视频爬取</p>
+                            </li>
+                            <li>
+                                <p>更好的服务器</p>
+                            </li>
+                        </ul>
+
+                    </div>
+                    <hr/>
+                    <br/>
+                    <br/>
+
+
+                    <div class="blog-comment" id="comments_div">
+
+                    </div>
+
+                    <div class="blog-comment-form">
+                        <h3>Leave a Comment</h3>
+                        <form action="#" method="post">
+                            <textarea class="form-control" id="comment" placeholder="Message" rows="5" name"Your
+                            Comments" required></textarea>
+                            <input type="text" class="form-control" placeholder="Name" name="name" id="name">
+                            <input type="text" class="form-control" placeholder="Email" name="email" id="email">
+                            <div class="col-md-3 col-sm-4">
+                                <input type="button" class="form-control" value="Post Your Comment" id="submitComment">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 h-100 text-center text-lg-left my-auto">
+                <ul class="list-inline mb-2">
+                    <li class="list-inline-item">
+                        <a href="#" data-toggle="modal" data-target="#aboutModal">关于</a>
+                    </li>
+                    <li class="list-inline-item">&sdot;</li>
+                    <li class="list-inline-item">
+                        <a href="#" data-toggle="modal" data-target="#contactModal">联系方式</a>
+                    </li>
+                    <li class="list-inline-item">&sdot;</li>
+                    <li class="list-inline-item">
+                        <a href="#" data-toggle="modal" data-target="#disclaimerModal">免责声明</a>
+                    </li>
+                    <li class="list-inline-item">&sdot;</li>
+                    <li class="list-inline-item">
+                        <a href="#" data-toggle="modal" data-target="#ppModal">隐私政策</a>
+                    </li>
+                </ul>
+                <p class="text-muted small mb-4 mb-lg-0">&copy; PicLover 2018. All Rights Reserved.</p>
+            </div>
+            <!--<div class="col-lg-6 h-100 text-center text-lg-right my-auto">-->
+            <!--<ul class="list-inline mb-0">-->
+            <!--<li class="list-inline-item mr-3">-->
+            <!--<a href="#">-->
+            <!--<i class="fa fa-facebook fa-2x fa-fw"></i>-->
+            <!--</a>-->
+            <!--</li>-->
+            <!--<li class="list-inline-item mr-3">-->
+            <!--<a href="#">-->
+            <!--<i class="fa fa-twitter fa-2x fa-fw"></i>-->
+            <!--</a>-->
+            <!--</li>-->
+            <!--<li class="list-inline-item">-->
+            <!--<a href="#">-->
+            <!--<i class="fa fa-instagram fa-2x fa-fw"></i>-->
+            <!--</a>-->
+            <!--</li>-->
+            <!--</ul>-->
+            <!--</div>-->
+
+            <!-- about -->
+            <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                <!--&times;-->
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                关于
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            站长私人小水管境外Vps.<br/><br/>
+                            所以可能经常无响应或者挂掉，换个时间再来吧.<br/><br/>
+                            有建议可以留言给我，我考虑是否升级Vps配置。<br/><br/>
+
+                            关注公众号有美图推送。<br/><br/>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                            </button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+
+            <!--contact-->
+            <div class="modal fade" id="contactModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                <!--&times;-->
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                联系方式
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            WeChat:237440906<br/><br/>
+                            Email:akalxs@gmail.com<br/><br/>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                            </button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+
+            <!--disclaimer-->
+            <div class="modal fade" id="disclaimerModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                <!--&times;-->
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                免责声明
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            爱图客（piclover.cn）刊载的所有内容，包括文字、图片、音频、视频、软件、程序、以及网页版式设计等均在网上搜集。<br/><br/>
+                            爱图客提供的内容仅用于个人学习、研究或欣赏。我们不保证内容的正确性。通过使用本站内容随之而来的风险与本站无关。<br/><br/>
+                            访问者可将本网站提供的内容或服务用于个人学习、研究或欣赏，以及其他非商业性或非盈利性用途，但同时应遵守著作权法及其他相关法律的规定，不得侵犯本网站及相关权利人的合法权利。<br/><br/>
+                            本网站内容原作者如不愿意在本网站刊登内容,请及时通知本站,予以删除。<br/><br/>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                            </button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+
+            <!--pp-->
+            <div class="modal fade" id="ppModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                <!--&times;-->
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                隐私政策
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            功能性站点，不会收集您的<b>任何</b>信息。<br/><br/>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                            </button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<script src="js/m/jquery.js"></script>
+<script src="js/m/bootstrap.min.js"></script>
+<script src="js/m/custom.js"></script>
+</body>
+</html>
